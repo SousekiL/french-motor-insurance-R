@@ -5,7 +5,6 @@
 # Reference: Wüthrich & Buser (2018)
 # =============================================================================
 
-library(CASdatasets)
 library(dplyr)
 library(data.table)
 
@@ -13,15 +12,37 @@ library(data.table)
 # 1.1 Load Data
 # -----------------------------------------------------------------------------
 
-#' Load raw motor insurance data from CASdatasets
-load_raw_data <- function() {
-  data("freMTPL2freq")
-  freq_data <- as.data.table(freMTPL2freq)
+#' Load raw motor insurance data from CASdatasets or CSV files
+load_raw_data <- function(raw_dir = "data/raw") {
+  freq_path <- file.path(raw_dir, "freMTPL2freq.csv")
+  sev_path <- file.path(raw_dir, "freMTPL2sev.csv")
 
-  data("freMTPL2sev")
-  sev_data <- as.data.table(freMTPL2sev)
+  # Prefer CASdatasets if available
+  if (requireNamespace("CASdatasets", quietly = TRUE)) {
+    data("freMTPL2freq", package = "CASdatasets")
+    data("freMTPL2sev", package = "CASdatasets")
+    freq_data <- as.data.table(get("freMTPL2freq"))
+    sev_data <- as.data.table(get("freMTPL2sev"))
+    # Export to CSV for notebook and future runs without CASdatasets
+    dir.create(raw_dir, showWarnings = FALSE, recursive = TRUE)
+    write.csv(freq_data, freq_path, row.names = FALSE)
+    write.csv(sev_data, sev_path, row.names = FALSE)
+    message("Data loaded from CASdatasets and saved to ", raw_dir)
+    return(list(freq = freq_data, sev = sev_data))
+  }
 
-  list(freq = freq_data, sev = sev_data)
+  # Fallback: load from CSV if files exist
+  if (file.exists(freq_path) && file.exists(sev_path)) {
+    freq_data <- as.data.table(read.csv(freq_path, header = TRUE))
+    sev_data <- as.data.table(read.csv(sev_path, header = TRUE))
+    return(list(freq = freq_data, sev = sev_data))
+  }
+
+  stop(
+    "Data not found. Either install CASdatasets (see R/00_install_packages.R)\n",
+    "  or place freMTPL2freq.csv and freMTPL2sev.csv in ", raw_dir, "\n",
+    "  Download from: https://www.kaggle.com/datasets/floser/french-motor-claims-datasets-fremtpl2freq"
+  )
 }
 
 #' Preprocess frequency data for modeling
@@ -112,3 +133,4 @@ run_data_loading <- function(output_path = "data/processed/freq_data_clean.rds")
   save_processed_data(freq_data_clean, output_path)
   invisible(freq_data_clean)
 }
+

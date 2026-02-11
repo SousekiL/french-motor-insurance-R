@@ -54,10 +54,15 @@ french-motor-insurance-R/
 source("R/00_install_packages.R")
 ```
 
-For CASdatasets (freMTPL2 data):
+CASdatasets is not on CRAN. The install script tries multiple repositories. If it fails, try manually:
 
 ```r
-install.packages("CASdatasets", repos = "http://cas.uqam.ca/pub/R/", type = "source")
+# Option 1: CNRS repository
+install.packages("CASdatasets", repos = "https://dutangc.perso.math.cnrs.fr/RRepository/pub/", type = "source")
+
+# Option 2: GitHub (requires devtools)
+install.packages("devtools")
+devtools::install_github("dutangc/CASdatasets")
 ```
 
 ### 2. Run full pipeline
@@ -115,6 +120,32 @@ run_rate_table_generation()
 | `output/models/xgboost_model.rds` | Fitted XGBoost |
 | `output/tables/model_comparison.csv` | GLM vs XGBoost metrics |
 | `output/tables/rate_table.csv` | Coefficient relativities |
+
+## R Notebook (Jupyter) – Set Project Root
+
+When opening R notebooks (e.g. `claim_frequency/*.ipynb`), add a **first code cell** so the working directory is always the project root:
+
+```r
+# Set working directory to project root (run first)
+if (file.exists("main.R")) NULL 
+  else if (file.exists("../main.R")) setwd("..") 
+  else if (file.exists("../../main.R")) setwd("../..")
+cat("Working directory:", getwd(), "\n")
+```
+
+Or source the setup script from the notebook directory:
+
+```r
+source("setup_project_root.R")
+```
+
+Alternative: use `here` for paths:
+
+```r
+install.packages("here")
+here::i_am("claim_frequency/glm-neural-nets-and-xgboost-for-insurance-pricing_v2.ipynb")
+data_path <- here::here("data", "raw", "freMTPL2freq.csv")
+```
 
 ## License
 

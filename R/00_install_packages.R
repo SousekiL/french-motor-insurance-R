@@ -30,7 +30,6 @@ install.packages(c(
 
   # Actuarial packages
   "insuranceData",
-  "CASdatasets",
   "actuar",
   "ChainLadder",
 
@@ -45,14 +44,9 @@ install.packages(c(
   "scales"
 ))
 
-# Install CASdatasets from R-Forge (special repository)
-# This package contains the freMTPL2 datasets
-install.packages("CASdatasets", repos = "http://cas.uqam.ca/pub/R/", type = "source")
-
 # Load core libraries
 library(dplyr)
 library(ggplot2)
-library(CASdatasets)
 
 # Set global options
 options(scipen = 999)
