@@ -1,0 +1,66 @@
+
+================================================================================
+CANN汽车保险定价模型 - 模型信息卡
+================================================================================
+
+1. 模型基本信息
+   - 模型名称: Combined Actuarial Neural Network (CANN)
+   - 版本: 1.0
+   - 训练日期: 2026-02-11 18:25:05
+   - 框架: TensorFlow/Keras 2.20.0
+
+2. 模型架构
+   - 输入特征: 4 个连续变量 + 3 个类别变量
+   - 连续变量: age, driving_exp, vehicle_age, credit_score
+   - 类别变量: state (5类), vehicle_type (4类), gender (2类)
+   - 嵌入维度: state=3, vehicle=2, gender=1
+   - 隐藏层: [64, 32]
+   - 总参数量: 2,847
+
+3. 训练数据
+   - 训练集大小: 8,000
+   - 测试集大小: 2,000
+   - 平均索赔频率: 0.0966
+   - 索赔率: 8.99%
+
+4. 模型性能
+   - 测试集泊松偏差: 890.12
+   - 测试集MAE: 0.1682
+   - 相比GLM改进: -0.81%
+
+5. 使用说明
+   - 输入要求: 
+     * age: 18-85岁
+     * driving_exp: 0-60年
+     * vehicle_age: 0-15年
+     * credit_score: 300-850
+     * state: CA, FL, IL, NY, TX
+     * vehicle_type: SUV, Sedan, Sports, Truck
+     * gender: F, M
+   
+   - 输出: 预期年索赔次数（连续值）
+   
+   - 使用示例:
+     ```python
+     predictions = load_and_predict(customer_df)
+     premium = base_premium + predictions * claim_cost
+     ```
+
+6. 限制与注意事项
+   - 模型基于模拟数据训练，实际应用需使用真实数据重新训练
+   - 预测结果应结合业务规则和人工审核
+   - 定期监控模型性能，建议每季度重新评估
+   - 对于极端值（如超高龄、超低信用分）需谨慎使用
+
+7. 文件清单
+   - cann_auto_insurance_model.keras: 完整模型
+   - cann_model.weights.h5: 模型权重
+   - scaler.pkl: 标准化器
+   - label_encoders.pkl: 类别编码器
+   - model_metadata.pkl: 元数据
+
+8. 联系信息
+   - 模型开发: Actuarial Data Science Team
+   - 更新日期: 2026-02-11
+
+================================================================================
